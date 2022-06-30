@@ -28,8 +28,9 @@ public:
 	//Конструктор по умолчанию
 	String()
 	{
-		this->Str = nullptr;
+		this->Str = new char[1];
 		this->length = 0;
+		this->Str[0] = '\0';
 	}
 	//Конструктор для строки
 	String(const char* str)
@@ -43,6 +44,23 @@ public:
 		}
 		this->Str[length] = '\0';
 
+	}
+	String(char symbol)
+	{
+		this->Str = new char[2];
+		this->Str[0] = symbol;
+		this->Str[1] = '\0';
+		this->length = 1;
+	}
+	String(int n,char symbol)
+	{
+		this->Str = new char[n + 1];
+		for (int i = 0; i < n; i++)
+		{
+			this->Str[i] = symbol;
+		}
+		this->Str[n] = '\0';
+		this->length = strlen(this->Str);
 	}
 	//Деструктор
 	~String()
@@ -216,6 +234,55 @@ public:
 			return *this;
 		}
 	}
+	//Возвращает подстроку дан	ой строки начиная с символа с индексом pos и до конца строки.
+	String SubStr(size_t pos)
+	{
+		String TempStr;
+		int j = 0, n = (this->length - pos);
+		TempStr.Str = new char[n+ 1];
+		for (int i = pos; i < length; j++,i++)
+		{
+			TempStr.Str[j] = this->Str[i];
+		}
+		TempStr.Str[n] = '\0';
+		return TempStr;
+	}
+	//возвращает подстроку данной строки начиная с символа с индексом pos количеством 
+	//count или до конца строки, если pos + count > S.size().
+	String SubStr(size_t pos, size_t count)
+	{
+		/*Если количество копируемых символов, начиная с pos превышает длину исходной строки
+		,то в таком случае нужно будет копировать с pos до конца строки
+		Если же количество копируемых символов начиная с pos не превышает длину исходной строки,
+		То строка копируется с pos  и до count*/
+		if (count < this->length)
+		{
+			String TempStr;
+			int j = 0;
+			TempStr.Str = new char[count + 1]; /*В данном случае выделение памяти происходит просто:
+											   Начиная с позиции pos(в том числе и она) копируются символы до count,
+											    в таком случае рационально будет взять count копируемых символов и использовать в качестве
+												размера строки*/
+			for (int i = pos; i < count + pos; j++, i++)
+			{
+				TempStr.Str[j] = this->Str[i];
+			}
+			TempStr.Str[count] = '\0';
+			return TempStr;
+		}
+		else if (count > this->length)
+		{
+			String TempStr;
+			int j = 0;
+			TempStr.Str = new char[(this->length - pos)+1];
+			for (int i = pos; i < length; j++,i++)
+			{
+				TempStr.Str[j] = this->Str[i];
+			}
+			TempStr.Str[length-pos] = '\0';
+			return TempStr;
+		}
+	}
 	//Метод определения размера строки
 	int Size()
 	{
@@ -237,12 +304,14 @@ public:
 		else
 			return 1;
 	}
+	//Проверка пустая ли строка или нет
 	String& isClear()
 	{
 		this->length = 0;
 		this->Str[0] = '\0';
 		return *this;
 	}
+	//Перегрузка операторов сравнения 
 	bool operator==(const String& other)
 	{
 		return strcmp(this->Str, other.Str)==0;
@@ -271,14 +340,8 @@ ostream& operator<<(ostream& out, String other)
 int main()
 {
 	setlocale(LC_ALL,"rus");
-	String str2("Good");
-	String str1("good");
-	str2.isClear();
-	if (str2 == str1)
-	{
-		cout << "Строки идентичны";
-	}
-	else if (str2 != str1)
-		cout << "Отличаются";
+	String str = "Hello World!";
+	String str2 = str.SubStr(2,5);
+	cout << str2;
 	return 0;
 }
