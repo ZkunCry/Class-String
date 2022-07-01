@@ -9,9 +9,14 @@ class String
 private:
 	char* Str; //сама строка, массив char
 	int length; //длина строки
+
 public:
+
 	/*Определение функции*/
 	char& operator()(int i);
+	char& operator[](int index);
+	bool operator!=(const String& other);
+	bool operator==(const String& other);
 
 	//Конструктор копирования 
 	String(const String &other)
@@ -93,11 +98,11 @@ public:
 		int i = 0;
 		for (; i < this->length;i++)
 		{
-			ResStr.Str[i] = this->Str[i];
+			ResStr[i] = this->Str[i];
 		}
 		for (int j = 0; j < other.length; j++,i++)
 		{
-			ResStr.Str[i] = other.Str[j];
+			ResStr[i] = other.Str[j];
 		}
 		ResStr.Str[count]='\0';
 		return ResStr;
@@ -113,13 +118,13 @@ public:
 			TempStr.length = temp; //Присваиваем новый размер исходной строки
 			for (int i = 0; i < OrigSize; i++) 
 			{
-				TempStr.Str[i] = this->Str[i]; //Пробегаемся циклом до конца строки, которой делаем resize
+				TempStr[i] = this->Str[i]; //Пробегаемся циклом до конца строки, которой делаем resize
 			}
-			TempStr.Str[temp] = '\0'; // Дописываем в конце строки ноль
+			TempStr[temp] = '\0'; // Дописываем в конце строки ноль
 			count = OrigSize;
-			while (TempStr.Str[count] != '\0') //Заполнение выделенных ячеек массива пустотой(нужно для того, чтобы не выводились мусорные значения)
+			while (TempStr[count] != '\0') //Заполнение выделенных ячеек массива пустотой(нужно для того, чтобы не выводились мусорные значения)
 			{
-				TempStr.Str[count] = ' ';
+				TempStr[count] = ' ';
 				count++; //Увеличиваем индекс
 			}
 
@@ -128,7 +133,7 @@ public:
 			this->Str = new char[length+1]; //Выделение новой памяти
 			for (int i = 0; i < TempStr.length; i++)
 			{
-				this->Str[i] = TempStr.Str[i]; //Присваиваем уже измененный массив исходному с новыми элементами
+				this->Str[i] = TempStr[i]; //Присваиваем уже измененный массив исходному с новыми элементами
 			}
 			this->Str[temp] = '\0'; // и присваиваем последнему элементу 0
 			return *this; // Возвращаем в качестве результата объект, который нужно было изменить
@@ -141,15 +146,15 @@ public:
 			TempStr.length = OrigSize;
 			for (int i = 0; i < OrigSize; i++)
 			{
-				TempStr.Str[i] = this->Str[i];
+				TempStr[i] = this->Str[i];
 			}
-			TempStr.Str[OrigSize] = '\0';
+			TempStr[OrigSize] = '\0';
 			delete[] this->Str;
 			this->length = OrigSize;
 			this->Str = new char[OrigSize + 1];
 			for (int i = 0; i < OrigSize; i++)
 			{
-				this->Str[i] = TempStr.Str[i];
+				this->Str[i] = TempStr[i];
 			}
 			this->Str[OrigSize] = '\0';
 			return *this;
@@ -169,17 +174,17 @@ public:
 			TempStr.length = this->length;
 			for (int i = 0; i < temp-1; i++)
 			{	if(i >= strlen(this->Str))
-					TempStr.Str[i] = symbol;
+					TempStr[i] = symbol;
 			else
-				TempStr.Str[i] = this->Str[i];
+				TempStr[i] = this->Str[i];
 			}
-			TempStr.Str[temp-1] = '\0';
+			TempStr[temp-1] = '\0';
 			delete[]this->Str;
 			this->length = strlen(TempStr.Str);
 			this->Str = new char[length+1];
-			for (int j = 0; TempStr.Str[j]!='\0'; j++)
+			for (int j = 0; TempStr[j]!='\0'; j++)
 			{
-				this->Str[j] = TempStr.Str[j];
+				this->Str[j] = TempStr[j];
 			}
 			this->Str[length] = '\0';
 			return *this;
@@ -192,15 +197,15 @@ public:
 			TempStr.length = OrigSize;
 			for (int i = 0; i < OrigSize; i++)
 			{
-				TempStr.Str[i] = this->Str[i];
+				TempStr[i] = this->Str[i];
 			}
-			TempStr.Str[OrigSize] = '\0';
+			TempStr[OrigSize] = '\0';
 			delete[] this->Str;
 			this->length = OrigSize;
 			this->Str = new char[OrigSize + 1];
 			for (int i = 0; i < OrigSize; i++)
 			{
-				this->Str[i] = TempStr.Str[i];
+				this->Str[i] = TempStr[i];
 			}
 			this->Str[OrigSize] = '\0';
 			return *this;
@@ -218,17 +223,17 @@ public:
 			for (int i = 0; i < this->length + 1; i++)
 			{
 				if (i == n - 1)
-					TempStr.Str[i] = c;
+					TempStr[i] = c;
 				else
-					TempStr.Str[i] = this->Str[i];
+					TempStr[i] = this->Str[i];
 			}
 			TempStr.Str[n] = '\0';
 			delete[]this->Str;
 			this->length = n;
 			this->Str = new char[n + 2];
-			for (int i = 0; TempStr.Str[i] != '\0'; i++)
+			for (int i = 0; TempStr[i] != '\0'; i++)
 			{
-				this->Str[i] = TempStr.Str[i];
+				this->Str[i] = TempStr[i];
 			}
 			this->Str[n] = '\0';
 			return *this;
@@ -242,9 +247,9 @@ public:
 		TempStr.Str = new char[n+ 1];
 		for (int i = pos; i < length; j++,i++)
 		{
-			TempStr.Str[j] = this->Str[i];
+			TempStr[j] = this->Str[i];
 		}
-		TempStr.Str[n] = '\0';
+		TempStr[n] = '\0';
 		return TempStr;
 	}
 	//возвращает подстроку данной строки начиная с символа с индексом pos количеством 
@@ -265,9 +270,9 @@ public:
 												размера строки*/
 			for (int i = pos; i < count + pos; j++, i++)
 			{
-				TempStr.Str[j] = this->Str[i];
+				TempStr[j] = this->Str[i];
 			}
-			TempStr.Str[count] = '\0';
+			TempStr[count] = '\0';
 			return TempStr;
 		}
 		else if (count > this->length)
@@ -277,11 +282,78 @@ public:
 			TempStr.Str = new char[(this->length - pos)+1];
 			for (int i = pos; i < length; j++,i++)
 			{
-				TempStr.Str[j] = this->Str[i];
+				TempStr[j] = this->Str[i];
 			}
-			TempStr.Str[length-pos] = '\0';
+			TempStr[length-pos] = '\0';
 			return TempStr;
 		}
+	}
+	String& Erase(int position)
+	{
+		String Temp;
+		int j = 0;
+		Temp.Str = new char[length];
+		for (int i = 0; i < length; i++)
+		{
+			if (i == position)
+			{
+				Temp[position] = this->Str[position+1];
+				j = position + 1;
+				i++;
+			}
+			else
+			{
+				Temp[j] = this->Str[i];
+				j++;
+			}
+
+		}
+		Temp[length-1] = '\0';
+		delete[] this->Str;
+		Str = new char[length];
+		for (int i = 0; i < length-1; i++)
+		{
+			Str[i] = Temp[i];
+		}
+		length--;
+		Str[length] = '\0';
+		return *this;
+	}
+	String& Erase(size_t index,size_t num)
+	{
+		String Temp;
+		int j = 0;
+		size_t n = (length-(num-index))-1;
+		Temp.Str = new char[n+1];
+		for (int i = 0; i < length; i++)
+		{
+			if (i == index)
+			{
+				i+=num-1;
+			}
+			else
+			{
+				Temp[j] = this->Str[i];
+				j++;
+			}
+
+		}
+		Temp[n] = '\0';
+		delete[] this->Str;
+		Str = new char[n+1];
+		for (int i = 0; i < n; i++)
+		{
+			Str[i] = Temp[i];
+		}
+		Str[n] = '\0';
+		length = n;
+		return *this;
+	}
+	String& Erase()
+	{
+		this->Str[0] = '\0';
+		this->length = 0;
+		return *this;
 	}
 	//Метод определения размера строки
 	int Size()
@@ -311,16 +383,21 @@ public:
 		this->Str[0] = '\0';
 		return *this;
 	}
-	//Перегрузка операторов сравнения 
-	bool operator==(const String& other)
-	{
-		return strcmp(this->Str, other.Str)==0;
-	}
-	bool operator!=(const String& other)
-	{
-		return strcmp(this->Str,other.Str)<0 || strcmp(this->Str, other.Str)>0;
-	}
+	
 };
+//Перегрузка операторов 
+bool String::operator==(const String& other)
+{
+	return strcmp(this->Str, other.Str) == 0;
+}
+bool String::operator!=(const String& other)
+{
+	return strcmp(this->Str, other.Str) < 0 || strcmp(this->Str, other.Str) > 0;
+}
+char& String::operator[](int index)
+{
+	return Str[index];
+}
 //Перегрузка ()
 char& String::operator()(int i)
 {
@@ -332,16 +409,15 @@ ostream& operator<<(ostream& out, String other)
 	other.GetStr();
 	for (int i = 0; i < other.Size(); i++)
 	{
-		cout << other(i);
+		cout << other[i];
 	}
-	return (out);
+	return out;
 }
 
 int main()
 {
 	setlocale(LC_ALL,"rus");
-	String str = "Hello World!";
-	String str2 = str.SubStr(2,5);
-	cout << str2;
+	String str ="01234567890";
+	cout << str.Erase(10, 10);
 	return 0;
 }
