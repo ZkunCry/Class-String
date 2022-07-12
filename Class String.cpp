@@ -16,13 +16,16 @@ private:
 
 public:
 	/*Определение методов*/
+	//Перегрузка операторов обычных и бинарных
 	char& operator()(int i);
 	char& operator[](int index)const;
 	size_t operator!=(const String& other);
 	size_t operator==(const String& other);
-	const char* c_str() const;
 	String& operator =(const String& other);
 	String operator+(const String& other);
+	friend String& operator+=(String& left, const String& right);
+	//Методы для работы со строками////
+	const char* c_str() const;
 	String& Resize(int n);
 	String& Resize(short int n, char symbol);
 	String SubStr(size_t pos , size_t count );
@@ -36,15 +39,17 @@ public:
 	String& isClear();
 	int Begin();
 	int End();
-	String& lower(size_t start, size_t end);
-	String& upper(size_t start, size_t end);
+	String& lower(size_t start, size_t end); //Метод, который делает все буквы строчными в строке
+	String& upper(size_t start, size_t end);//Метод, который делает все буквы заглавными в строке
 	size_t find(char symbol);
 	size_t find(char symbol, size_t position);
 	size_t find(const char* str);
 	String& append(const String& other, size_t start);
 	String& append(const char * other, size_t num);
 	String& append(const String& other, size_t start, size_t end);
-
+	String& insert(size_t num, const char* str);
+	int compare(size_t start, size_t num, const String& s) const;
+	//////
 	////////////////Конструкторы////////////////////////////////////
 	String(const String& other)
 	{
@@ -112,40 +117,7 @@ public:
 	
 };
 //Методы и перегрузки класса String///////////////////////////////
-String& String::operator =(const String& other)
-{
-	if (this->Str != nullptr)
-	{
-		delete[] this->Str;
-	}
-	this->length = strlen(other.Str);
-	this->Str = new char[length + 1];
-	for (int i = 0; i < length; i++)
-	{
-		this->Str[i] = other.Str[i];
-	}
-	this->Str[length] = '\0';
-	return *this;
-}
-//Перегруженный оператор суммирования(конкатенация)
-String String::operator+(const String& other)
-{
-	String ResStr;
-	size_t count = strlen(this->Str) + strlen(other.Str);
-	ResStr.Str = new char[count + 1];
-	int i = 0;
-	for (; i < strlen(this->Str); i++)
-	{
-		ResStr[i] = this->Str[i];
-	}
-	for (int j = 0; j < strlen(other.Str); j++, i++)
-	{
-		ResStr[i] = other.Str[j];
-	}
-	ResStr.Str[count] = '\0';
-	ResStr.length = count;
-	return ResStr;
-}
+
 //Перераспределение размера стркои
 String& String::Resize(int n)
 {
@@ -539,7 +511,7 @@ String& String::append(const String& other,size_t start)
 	this->Str[TempStr.length] = '\0';
 	return *this;
 }
-
+//Добавление другой строки к исходной строке
 String& String::append(const char* other, size_t num)
 {
 	String TempStr; 
@@ -600,20 +572,45 @@ String& String::append(const String& other, size_t start, size_t end)
 	this->Str[TempStr.length] = '\0';
 	return *this;
 }
-
-//Перегрузка операторов 
-size_t String::operator==(const String& other)
+//Вставка символа, строки в любую позицию строки
+String& String::insert(size_t num, const char* str)
 {
-	return strcmp(this->Str, other.Str) == 0;
+	String Result;
+	int i = 0,j=0;
+	int size = length + strlen(str);
+	Result.Str = new char[length + strlen(str)+1];
+	for (; i < num; i++)
+		Result[i] = Str[i];
+	for (i; j < strlen(str); j++, i++)
+		Result[i] = str[j];
+	for (; i < size;num++, i++)
+		Result[i] = Str[num];
+	Result[size] = '\0';
+	delete[]this->Str;
+	length = size;
+	this->Str = new char[size + 1];
+	for (int i = 0; i < size; i++)
+		this->Str[i] = Result[i];
+	this->Str[size] = '\0';
+	return *this;
 }
+//Сравнение строк
+int String::compare(size_t start, size_t num, const String& s) const
+{
+	if (num < strlen(s.Str))
+		return -1;
+	else if (num > strlen(s.Str))
+		return 1;
+	else if (strcmp(this->Str, s.Str) == 0)
+		return 0;
+}
+//Формирование строки в стиле Си(char)
 const char* String::c_str() const
 {
 	return this->Str;
 }
-size_t String::operator!=(const String& other)
-{
-	return strcmp(this->Str, other.Str) < 0 || strcmp(this->Str, other.Str) > 0;
-}
+
+//Перегрузка оператора индексирования
 char& String::operator[](int index) const
 {
 	return Str[index];
@@ -623,7 +620,7 @@ char& String::operator()(int i)
 {
 	return (Str[i]);
 }
-//Перегрузка cout
+//Перегрузка потока cout
 ostream& operator<<(ostream& out, String other)
 {
 	other.GetStr();
@@ -633,15 +630,63 @@ ostream& operator<<(ostream& out, String other)
 	}
 	return out;
 }
+String& String::operator =(const String& other)
+{
+	if (this->Str != nullptr)
+	{
+		delete[] this->Str;
+	}
+	this->length = strlen(other.Str);
+	this->Str = new char[length + 1];
+	for (int i = 0; i < length; i++)
+	{
+		this->Str[i] = other.Str[i];
+	}
+	this->Str[length] = '\0';
+	return *this;
+}
+//Перегруженный оператор суммирования(конкатенация)
+String String::operator+(const String& other)
+{
+	String ResStr;
+	size_t count = strlen(this->Str) + strlen(other.Str);
+	ResStr.Str = new char[count + 1];
+	int i = 0;
+	for (; i < strlen(this->Str); i++)
+	{
+		ResStr[i] = this->Str[i];
+	}
+	for (int j = 0; j < strlen(other.Str); j++, i++)
+	{
+		ResStr[i] = other.Str[j];
+	}
+	ResStr.Str[count] = '\0';
+	ResStr.length = count;
+	return ResStr;
+}
+//Перегрузка бинарных операторов
+String& operator+=(String& left, const String& right)
+{
+	left = left + right;
+	return left;
 
+}
+size_t String::operator==(const String& other)
+{
+	return strcmp(this->Str, other.Str) == 0;
+}
+
+size_t String::operator!=(const String& other)
+{
+	return strcmp(this->Str, other.Str) < 0 || strcmp(this->Str, other.Str) > 0;
+}
 int main()
 {
 	setlocale(LC_ALL,"rus");
-	string s = "01234567890";
-	s.erase(3, 5); // s = "012890"
-	cout << s;
-	s = "01234567890";
-	s.erase(); // s = ""
-	cout << s;
+	String s1 = "abcdef";
+	String s2 = "1234567890";
+	s1 += s2;
+	cout << s1;
 	return 0;
 }
+
