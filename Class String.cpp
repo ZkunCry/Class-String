@@ -1,5 +1,7 @@
-﻿#pragma warning(disable: 4018)
+﻿//Class String
+#pragma warning(disable: 4018)
 #define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -13,9 +15,9 @@ private:
 	size_t length; //длина строки
 
 public:
-	/*Определение функции*/
+	/*Определение методов*/
 	char& operator()(int i);
-	char& operator[](int index);
+	char& operator[](int index)const;
 	size_t operator!=(const String& other);
 	size_t operator==(const String& other);
 	const char* c_str() const;
@@ -39,7 +41,10 @@ public:
 	size_t find(char symbol);
 	size_t find(char symbol, size_t position);
 	size_t find(const char* str);
-	String& append(String& other);
+	String& append(const String& other, size_t start);
+	String& append(const char * other, size_t num);
+	String& append(const String& other, size_t start, size_t end);
+
 	////////////////Конструкторы////////////////////////////////////
 	String(const String& other)
 	{
@@ -50,8 +55,14 @@ public:
 			this->Str[i] = other.Str[i];
 		}
 		this->Str[length] = '\0';
+		
 	}
-
+	String(String&& other) noexcept
+	{
+		this->length = other.length;
+		this->Str = other.Str;
+		other.Str = nullptr;
+	}
 	//Конструктор по умолчанию
 	String()
 	{
@@ -123,7 +134,7 @@ String String::operator+(const String& other)
 	size_t count = strlen(this->Str) + strlen(other.Str);
 	ResStr.Str = new char[count + 1];
 	int i = 0;
-	for (i = 0; i < this->length; i++)
+	for (; i < strlen(this->Str); i++)
 	{
 		ResStr[i] = this->Str[i];
 	}
@@ -481,6 +492,9 @@ size_t String::find(char symbol, size_t position)
 			return result = i;
 	}
 }
+//Метод нахождения конкретного фрагмента в строке
+/*Если в строке содержится n одинаковых символов, то функция возвращает исходную позицию самого первого символа
+, который совпадает*/
 size_t String::find(const char* str)
 {
 	size_t result = 0, j = 0, q = 0;
@@ -498,14 +512,86 @@ size_t String::find(const char* str)
 	else
 		return 0;
 }
-String& String::append(String& other)
+String& String::append(const String& other,size_t start)
 {
 	String TempStr;
+	String resultOther;
+
+	resultOther.Str = new char[start + 1];
+
+	for (int i = 0; i < start; i++)
+		resultOther[i] = other[i];
+
+	resultOther[start] = '\0';
+	resultOther.length = start;
+
 	TempStr.Str = new char[this->length + 1];
+
 	for (int i = 0; i < length; i++)
 		TempStr[i] = this->Str[i];
 	TempStr[length] = '\0';
-	TempStr = TempStr + other;
+	TempStr = TempStr + resultOther;
+	for (int i = 0; i < length; i++)
+		TempStr[i] = this->Str[i];
+	this->Str = new char[TempStr.Size() + 1];
+	for (int i = 0; i < TempStr.Size(); i++)
+		this->Str[i] = TempStr[i];
+	this->Str[TempStr.length] = '\0';
+	return *this;
+}
+
+String& String::append(const char* other, size_t num)
+{
+	String TempStr; 
+	/* Временные строки, которые нужны
+					для вычислений*/
+	String resultOther;
+
+	resultOther.Str = new char[num + 1];
+
+	for (int i = 0; i < num; i++)
+		resultOther[i] = other[i];
+
+	resultOther[num] = '\0';
+	resultOther.length = num;
+
+	TempStr.Str = new char[this->length + 1];
+
+	for (int i = 0; i < length; i++)
+		TempStr[i] = this->Str[i];
+	TempStr[length] = '\0';
+	TempStr = TempStr + resultOther;
+	for (int i = 0; i < length; i++)
+		TempStr[i] = this->Str[i];
+	this->Str = new char[TempStr.Size() + 1];
+	for (int i = 0; i < TempStr.Size(); i++)
+		this->Str[i] = TempStr[i];
+	this->Str[TempStr.length] = '\0';
+	return *this;
+}
+//Метод который складывает две строки, например
+/*String s1 = "123" String s2 = "456 результатом
+s1.append(s2,0) 
+будет 123456*/
+String& String::append(const String& other, size_t start, size_t end)
+{
+	String TempStr;
+	String resultOther;
+	int j = 0;
+	resultOther.Str = new char[end + 1];
+
+	for (int i = start; j < end; j++,i++)
+		resultOther[j] = other[i];
+
+	resultOther[end] = '\0';
+	resultOther.length = end;
+
+	TempStr.Str = new char[this->length + 1];
+
+	for (int i = 0; i < length; i++)
+		TempStr[i] = this->Str[i];
+	TempStr[length] = '\0';
+	TempStr = TempStr + resultOther;
 	for (int i = 0; i < length; i++)
 		TempStr[i] = this->Str[i];
 	this->Str = new char[TempStr.Size() + 1];
@@ -528,7 +614,7 @@ size_t String::operator!=(const String& other)
 {
 	return strcmp(this->Str, other.Str) < 0 || strcmp(this->Str, other.Str) > 0;
 }
-char& String::operator[](int index)
+char& String::operator[](int index) const
 {
 	return Str[index];
 }
@@ -551,8 +637,11 @@ ostream& operator<<(ostream& out, String other)
 int main()
 {
 	setlocale(LC_ALL,"rus");
-	String s = "abcdef";
-	s.Resize(7,'+');
+	string s = "01234567890";
+	s.erase(3, 5); // s = "012890"
+	cout << s;
+	s = "01234567890";
+	s.erase(); // s = ""
 	cout << s;
 	return 0;
 }
