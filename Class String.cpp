@@ -1,4 +1,4 @@
-﻿//Class String
+//Class String
 #pragma warning(disable: 4018)
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -23,18 +23,23 @@ public:
 	size_t operator==(const String& other);
 	String& operator =(const String& other);
 	String operator+(const String& other);
+	bool operator>(const String& other);
+	bool operator<(const String& other);
+	size_t operator>=(const String& other);
+	size_t operator<=(const String& other);
 	friend String& operator+=(String& left, const String& right);
+	friend String& operator+=(String& left, const char symbol);
 	//Методы для работы со строками////
 	const char* c_str() const;
 	String& Resize(int n);
 	String& Resize(short int n, char symbol);
-	String SubStr(size_t pos , size_t count );
+	String SubStr(size_t pos, size_t count);
 	String& Push_back(char c);
 	String& Erase(int position);
 	String& Erase(size_t index, size_t num);
 	String& Erase();
-	size_t Size();
-	String GetStr();
+	size_t Size()const;
+	const String const GetStr();
 	bool isEmpty();
 	String& isClear();
 	int Begin();
@@ -45,10 +50,14 @@ public:
 	size_t find(char symbol, size_t position);
 	size_t find(const char* str);
 	String& append(const String& other, size_t start);
-	String& append(const char * other, size_t num);
+	String& append(const char* other, size_t num);
 	String& append(const String& other, size_t start, size_t end);
 	String& insert(size_t num, const char* str);
+	String &assign(const String &str);
+	String& assign(const String& s, size_t st, size_t num);
+	String& assign(const char *ps, size_t st, size_t num);
 	int compare(size_t start, size_t num, const String& s) const;
+
 	//////
 	////////////////Конструкторы////////////////////////////////////
 	String(const String& other)
@@ -60,9 +69,9 @@ public:
 			this->Str[i] = other.Str[i];
 		}
 		this->Str[length] = '\0';
-		
+
 	}
-	String(String&& other) noexcept
+	String(String&& other) noexcept // Конструктор перемещения
 	{
 		this->length = other.length;
 		this->Str = other.Str;
@@ -114,7 +123,7 @@ public:
 			this->length = 0;
 		}
 	}
-	
+
 };
 //Методы и перегрузки класса String///////////////////////////////
 
@@ -127,18 +136,17 @@ String& String::Resize(int n)
 		int OrigSize = this->length, count = 0, temp = (OrigSize + abs(OrigSize - n)); //Здесь вычисляется размер строки
 		TempStr.Str = new char[temp + 1]; //Выделение памяти под временную строку, которая будет хранить результат
 		TempStr.length = temp; //Присваиваем новый размер исходной строки
+		count = OrigSize;
 		for (int i = 0; i < OrigSize; i++)
 		{
 			TempStr[i] = this->Str[i]; //Пробегаемся циклом до конца строки, которой делаем resize
 		}
 		TempStr[temp] = '\0'; // Дописываем в конце строки ноль
-		count = OrigSize;
 		while (TempStr[count] != '\0') //Заполнение выделенных ячеек массива пустотой(нужно для того, чтобы не выводились мусорные значения)
 		{
 			TempStr[count] = ' ';
 			count++; //Увеличиваем индекс
 		}
-
 		delete[]this->Str; /*Очищаем память для того, чтобы потом изменить размер строки при выделении памяти*/
 		this->length = temp; //Присваиваем размер новый
 		this->Str = new char[length + 1]; //Выделение новой памяти
@@ -369,6 +377,18 @@ String& String::Erase(size_t index, size_t num)
 	length = n;
 	return *this;
 }
+String& String::assign(const String& str)
+{
+	size_t size = str.Size();
+	if (this->length != 0)
+		delete[] this->Str;
+	this->Str = new char[size+1];
+	for (int i = 0; i < size; i++)
+		this->Str[i] = str[i];
+	this->Str[size] = '\0';
+	return *this;
+
+}
 //Перегруженный метод удаления символов из строки
 String& String::Erase()
 {
@@ -377,13 +397,13 @@ String& String::Erase()
 	return *this; // В качестве результата возвращает пустую строку и изменяет объект
 }
 //Метод определения размера строки
-size_t String::Size()
+size_t String::Size()const 
 {
-	return this->length = strlen(Str);
+	return strlen(Str);
 }
 /*Геттер для строки, возвращает строку, которую запрашивает
 пользователь*/
-String String::GetStr()
+const String const String::GetStr()
 {
 	return Str;
 }
@@ -404,11 +424,11 @@ String& String::isClear()
 	this->Str[0] = '\0';
 	return *this;
 }
-/*Функции возвращающие 
+/*Функции возвращающие
 начало и конец строки*/
 int String::Begin()
 {
-	return 0; 
+	return 0;
 }
 int String::End()
 {
@@ -484,7 +504,7 @@ size_t String::find(const char* str)
 	else
 		return 0;
 }
-String& String::append(const String& other,size_t start)
+String& String::append(const String& other, size_t start)
 {
 	String TempStr;
 	String resultOther;
@@ -514,7 +534,7 @@ String& String::append(const String& other,size_t start)
 //Добавление другой строки к исходной строке
 String& String::append(const char* other, size_t num)
 {
-	String TempStr; 
+	String TempStr;
 	/* Временные строки, которые нужны
 					для вычислений*/
 	String resultOther;
@@ -543,7 +563,7 @@ String& String::append(const char* other, size_t num)
 }
 //Метод который складывает две строки, например
 /*String s1 = "123" String s2 = "456 результатом
-s1.append(s2,0) 
+s1.append(s2,0)
 будет 123456*/
 String& String::append(const String& other, size_t start, size_t end)
 {
@@ -552,7 +572,7 @@ String& String::append(const String& other, size_t start, size_t end)
 	int j = 0;
 	resultOther.Str = new char[end + 1];
 
-	for (int i = start; j < end; j++,i++)
+	for (int i = start; j < end; j++, i++)
 		resultOther[j] = other[i];
 
 	resultOther[end] = '\0';
@@ -576,14 +596,14 @@ String& String::append(const String& other, size_t start, size_t end)
 String& String::insert(size_t num, const char* str)
 {
 	String Result;
-	int i = 0,j=0;
+	int i = 0, j = 0;
 	int size = length + strlen(str);
-	Result.Str = new char[length + strlen(str)+1];
+	Result.Str = new char[length + strlen(str) + 1];
 	for (; i < num; i++)
 		Result[i] = Str[i];
 	for (i; j < strlen(str); j++, i++)
 		Result[i] = str[j];
-	for (; i < size;num++, i++)
+	for (; i < size; num++, i++)
 		Result[i] = Str[num];
 	Result[size] = '\0';
 	delete[]this->Str;
@@ -592,6 +612,31 @@ String& String::insert(size_t num, const char* str)
 	for (int i = 0; i < size; i++)
 		this->Str[i] = Result[i];
 	this->Str[size] = '\0';
+	return *this;
+}
+String& String::assign(const String& s, size_t st, size_t num)
+{
+	if (this->length != 0 || this->Str != nullptr)
+		delete[]Str;
+	size_t size = num;
+	size_t j=0;
+	Str = new char[size + 1];
+	for (int i = st; i < num; i++, j++)
+		this->Str[j] = s[i];
+	Str[size] = '\0';
+	return *this;
+
+}
+String& String::assign(const char* ps, size_t st, size_t num)
+{
+	if (this->length != 0 || this->Str != nullptr)
+		delete[]Str;
+	size_t size = num;
+	size_t j = 0;
+	Str = new char[size + 1];
+	for (int i = st; i < num; i++, j++)
+		this->Str[j] = ps[i];
+	Str[size] = '\0';
 	return *this;
 }
 //Сравнение строк
@@ -664,10 +709,33 @@ String String::operator+(const String& other)
 	ResStr.length = count;
 	return ResStr;
 }
+bool String::operator>(const String& other)
+{
+	return length > other.length;
+}
+bool String::operator<(const String& other)
+{
+	return length < other.length;
+}
+size_t String::operator>=(const String& other)
+{
+	return strcmp(this->Str, other.Str) == 0 || strcmp(this->Str, other.Str) == 1;
+}
+size_t String::operator<=(const String& other)
+{
+	return strcmp(this->Str, other.Str) == 0 || strcmp(this->Str, other.Str) ==-1;
+}
 //Перегрузка бинарных операторов
 String& operator+=(String& left, const String& right)
 {
 	left = left + right;
+	return left;
+
+}
+String& operator+=(String& left, const char symbol)
+{
+	int n;
+	left.Push_back(symbol);
 	return left;
 
 }
@@ -682,11 +750,11 @@ size_t String::operator!=(const String& other)
 }
 int main()
 {
-	setlocale(LC_ALL,"rus");
-	String s1 = "abcdef";
-	String s2 = "1234567890";
-	s1 += s2;
-	cout << s1;
+	setlocale(LC_ALL, "rus");
+	String s1 = "bestprog.net";
+	String s2 = "best";
+	bool bl = s1>=s2;
+	cout << bl;
 	return 0;
 }
 
