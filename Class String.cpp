@@ -1,4 +1,4 @@
-﻿//Class String
+//Class String
 #pragma warning(disable: 4018)
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -30,7 +30,10 @@ public:
 	size_t operator<=(const String& other);
 	friend String& operator+=(String& left, const String& right);
 	friend String& operator+=(String& left, const char symbol);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	//Методы для работы со строками////
 	const char* c_str() const;
 	String& Resize(int n);
@@ -42,7 +45,11 @@ public:
 	String& Erase(size_t index, size_t num);
 	String& Erase();
 	size_t Size()const;
+<<<<<<< HEAD
 	const String GetStr();
+=======
+	const String const GetStr();
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	bool isEmpty();
 	String& isClear();
 	int Begin();
@@ -56,6 +63,7 @@ public:
 	String& append(const char* other, size_t num);
 	String& append(const String& other, size_t start, size_t end);
 	String& insert(size_t num, const char* str);
+<<<<<<< HEAD
 	String& assign(const String& str);
 	String& assign(const String& s, size_t st, size_t num);
 	String& assign(const char* ps, size_t st, size_t num);
@@ -66,6 +74,13 @@ public:
 	constexpr char& front();
 	constexpr char& back();
 
+=======
+	String &assign(const String &str);
+	String& assign(const String& s, size_t st, size_t num);
+	String& assign(const char *ps, size_t st, size_t num);
+	int compare(size_t start, size_t num, const String& s) const;
+
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	//////
 	////////////////Конструкторы////////////////////////////////////
 	String(const String& other)
@@ -410,7 +425,11 @@ String& String::assign(const String& str)
 	size_t size = str.Size();
 	if (this->length != 0)
 		delete[] this->Str;
+<<<<<<< HEAD
 	this->Str = new char[size + 1];
+=======
+	this->Str = new char[size+1];
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	for (int i = 0; i < size; i++)
 		this->Str[i] = str[i];
 	this->Str[size] = '\0';
@@ -425,13 +444,21 @@ String& String::Erase()
 	return *this; // В качестве результата возвращает пустую строку и изменяет объект
 }
 //Метод определения размера строки
+<<<<<<< HEAD
 size_t String::Size()const
+=======
+size_t String::Size()const 
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 {
 	return strlen(Str);
 }
 /*Геттер для строки, возвращает строку, которую запрашивает
 пользователь*/
+<<<<<<< HEAD
 String const String::GetStr()
+=======
+const String const String::GetStr()
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 {
 	return Str;
 }
@@ -647,7 +674,11 @@ String& String::assign(const String& s, size_t st, size_t num)
 	if (this->length != 0 || this->Str != nullptr)
 		delete[]Str;
 	size_t size = num;
+<<<<<<< HEAD
 	size_t j = 0;
+=======
+	size_t j=0;
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	Str = new char[size + 1];
 	for (int i = st; i < num; i++, j++)
 		this->Str[j] = s[i];
@@ -667,6 +698,7 @@ String& String::assign(const char* ps, size_t st, size_t num)
 	Str[size] = '\0';
 	return *this;
 }
+<<<<<<< HEAD
 void String::swap(String& str)
 {
 	char* ptemp = this->Str;
@@ -681,6 +713,8 @@ char& String::at(size_t pos)
 	return this->Str[pos];
 }
 
+=======
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 //Сравнение строк
 int String::compare(size_t start, size_t num, const String& s) const
 {
@@ -777,7 +811,11 @@ size_t String::operator>=(const String& other)
 }
 size_t String::operator<=(const String& other)
 {
+<<<<<<< HEAD
 	return strcmp(this->Str, other.Str) == 0 || strcmp(this->Str, other.Str) == -1;
+=======
+	return strcmp(this->Str, other.Str) == 0 || strcmp(this->Str, other.Str) ==-1;
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 }
 //Перегрузка бинарных операторов
 String& operator+=(String& left, const String& right)
@@ -788,6 +826,10 @@ String& operator+=(String& left, const String& right)
 }
 String& operator+=(String& left, const char symbol)
 {
+<<<<<<< HEAD
+=======
+	int n;
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	left.Push_back(symbol);
 	return left;
 
@@ -805,10 +847,17 @@ size_t String::operator!=(const String& other)
 int main()
 {
 	setlocale(LC_ALL, "rus");
+<<<<<<< HEAD
 	String s1 = "x2323";
 	char &s = s1.back();
 	s = 'e';
 	cout << s1<<endl;
 	cout << s;
+=======
+	String s1 = "bestprog.net";
+	String s2 = "best";
+	bool bl = s1>=s2;
+	cout << bl;
+>>>>>>> 10b1f0f00ef3e16739dfd6b86103749806eb1b10
 	return 0;
 }
